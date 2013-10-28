@@ -12,12 +12,12 @@ import sys
 #            --params='{"OFFLINE_NODE_WHEN_COMPLETE":"false","param1":"moon","param1":"sun"}'
 #
 #  To stop/abort a build:
-#      python gear_client.py -s MyGearmanSever --function=stop:jenkins-server2.novalocal \
-#            --params='{"name":"guava","number":"130"}'
+#      python gear_client.py -s MyGearmanSever --function=stop:MyGearmanSever \
+#            --params='{"name":"myProject","number":"130"}'
 #
 #  To change the build description:
-#      python gear_client.py -s MyGearmanSever --function=set_description:jenkins-server2.novalocal \
-#            --params='{"name":"guava","number":"105","html_description":"<h1>new description</h1>"}'
+#      python gear_client.py -s MyGearmanSever --function=set_description:MyGearmanSever \
+#            --params='{"name":"myProject","number":"105","html_description":"<h1>My New Description</h1>"}'
     
 class Client(object):
     def __init__(self):
