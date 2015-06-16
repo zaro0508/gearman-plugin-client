@@ -7,7 +7,7 @@ import argparse
 import sys
 from collections import deque
 
-# simple python client
+# A simple python client for gearman plugin
 
 class Client(object):
     def __init__(self):
@@ -44,8 +44,12 @@ class Client(object):
 
         job_queue = deque()
         job = None
+        num_jobs = int(self.args.iterations)
+        offline_node = build_params.get("OFFLINE_NODE_WHEN_COMPLETE", "false")
+        if (num_jobs > 1 and offline_node.lower()=="true"):
+            print "WARN: Offline node requested multiple times, may need to online nodes to complete this request"
         print "\n" + time.asctime( time.localtime(time.time()))
-        for x in range(0, int(self.args.iterations)):
+        for x in range(0, num_jobs):
             job_id = uuid.uuid4().hex
             build_params.update({'uuid':job_id})
             job = gear.Job(self.args.function,
@@ -56,7 +60,6 @@ class Client(object):
             gclient.submitJob(job)
             job_queue.append(job)
           
-
         # wait for jobs to complete before exiting
         print ("\nWaiting for jobs to finish"),
         finished = False
@@ -64,11 +67,14 @@ class Client(object):
             sys.stdout.write('.')
             sys.stdout.flush()
             if (job.complete):
-                print "\n\n---- Job Results ----"
-                print time.asctime( time.localtime(time.time())) + "\n"
+                print "\n\n-----  Job Results (" + time.asctime(time.localtime(time.time())) + ")  ------ \n"
                 while (len(job_queue) != 0) :
                     cjob = job_queue.popleft()
-                    print cjob.unique + ' : ' + str(cjob.data)
+                    if (cjob.failure or cjob.exception):
+                        # job request failed for some reason
+                        print cjob.unique + ' :  Failed'
+                    else:
+                        print cjob.unique + ' : ' + str(cjob.data)
                 finished = True
 
             time.sleep(1);
