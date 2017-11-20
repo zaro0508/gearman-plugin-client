@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import gear
-import simplejson
+import json
 import uuid
 import time
 import argparse
@@ -38,7 +38,7 @@ class Client(object):
         gclient.waitForServer()  # Wait for at least one server to be connected
 
         if not isinstance(self.args.params, dict):
-            build_params = simplejson.loads(self.args.params)
+            build_params = json.loads(self.args.params)
         else:
             build_params = self.args.params
 
@@ -53,7 +53,7 @@ class Client(object):
             job_id = uuid.uuid4().hex
             build_params.update({'uuid':job_id})
             job = gear.Job(self.args.function,
-                           simplejson.dumps(build_params),
+                           json.dumps(build_params),
                            unique=job_id)
 
             print "Sending job: " + self.args.function + " to " + self.args.server + " with params=" + str(build_params)
